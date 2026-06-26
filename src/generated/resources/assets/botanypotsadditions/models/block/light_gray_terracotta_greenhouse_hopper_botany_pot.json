@@ -1,0 +1,325 @@
+{
+    "parent":  "block/block",
+    "elements":  [
+                     {
+                         "faces":  {
+                                       "down":  {
+                                                    "texture":  "#material",
+                                                    "uv":  [
+                                                               0.0,
+                                                               0.0,
+                                                               12.0,
+                                                               12.0
+                                                           ]
+                                                },
+                                       "east":  {
+                                                    "texture":  "#material",
+                                                    "uv":  [
+                                                               0.0,
+                                                               0.0,
+                                                               12.0,
+                                                               8.0
+                                                           ]
+                                                },
+                                       "north":  {
+                                                     "texture":  "#material",
+                                                     "uv":  [
+                                                                12.0,
+                                                                0.0,
+                                                                0.0,
+                                                                8.0
+                                                            ]
+                                                 },
+                                       "south":  {
+                                                     "texture":  "#material",
+                                                     "uv":  [
+                                                                12.0,
+                                                                0.0,
+                                                                0.0,
+                                                                8.0
+                                                            ]
+                                                 },
+                                       "up":  {
+                                                  "texture":  "#material_top",
+                                                  "uv":  [
+                                                             0.0,
+                                                             0.0,
+                                                             12.0,
+                                                             12.0
+                                                         ]
+                                              },
+                                       "west":  {
+                                                    "texture":  "#material",
+                                                    "uv":  [
+                                                               0.0,
+                                                               0.0,
+                                                               12.0,
+                                                               8.0
+                                                           ]
+                                                }
+                                   },
+                         "from":  [
+                                      2.0,
+                                      0.0,
+                                      2.0
+                                  ],
+                         "name":  "outer",
+                         "to":  [
+                                    14.0,
+                                    8.0,
+                                    14.0
+                                ]
+                     },
+                     {
+                         "faces":  {
+                                       "east":  {
+                                                    "texture":  "#material",
+                                                    "uv":  [
+                                                               1.0,
+                                                               7.0,
+                                                               11.0,
+                                                               0.0
+                                                           ]
+                                                },
+                                       "north":  {
+                                                     "texture":  "#material",
+                                                     "uv":  [
+                                                                11.0,
+                                                                7.0,
+                                                                1.0,
+                                                                0.0
+                                                            ]
+                                                 },
+                                       "south":  {
+                                                     "texture":  "#material",
+                                                     "uv":  [
+                                                                11.0,
+                                                                7.0,
+                                                                1.0,
+                                                                0.0
+                                                            ]
+                                                 },
+                                       "up":  {
+                                                  "texture":  "#material",
+                                                  "uv":  [
+                                                             3.0,
+                                                             3.0,
+                                                             13.0,
+                                                             13.0
+                                                         ]
+                                              },
+                                       "west":  {
+                                                    "texture":  "#material",
+                                                    "uv":  [
+                                                               1.0,
+                                                               7.0,
+                                                               11.0,
+                                                               0.0
+                                                           ]
+                                                }
+                                   },
+                         "from":  [
+                                      13.0,
+                                      8.1,
+                                      13.0
+                                  ],
+                         "name":  "inner",
+                         "to":  [
+                                    3.0,
+                                    1.0,
+                                    3.0
+                                ]
+                     },
+                     {
+                         "faces":  {
+                                       "down":  {
+                                                    "cullface":  "down",
+                                                    "texture":  "#hopper_inside",
+                                                    "uv":  [
+                                                               2.0,
+                                                               2.0,
+                                                               14.0,
+                                                               14.0
+                                                           ]
+                                                },
+                                       "east":  {
+                                                    "texture":  "#hopper_outside",
+                                                    "uv":  [
+                                                               2.0,
+                                                               3.0,
+                                                               14.0,
+                                                               7.0
+                                                           ]
+                                                },
+                                       "north":  {
+                                                     "texture":  "#hopper_outside",
+                                                     "uv":  [
+                                                                14.0,
+                                                                3.0,
+                                                                2.0,
+                                                                7.0
+                                                            ]
+                                                 },
+                                       "south":  {
+                                                     "texture":  "#hopper_outside",
+                                                     "uv":  [
+                                                                14.0,
+                                                                3.0,
+                                                                2.0,
+                                                                7.0
+                                                            ]
+                                                 },
+                                       "up":  {
+                                                  "texture":  "#hopper_top",
+                                                  "uv":  [
+                                                             2.0,
+                                                             2.0,
+                                                             14.0,
+                                                             14.0
+                                                         ]
+                                              },
+                                       "west":  {
+                                                    "texture":  "#hopper_outside",
+                                                    "uv":  [
+                                                               2.0,
+                                                               3.0,
+                                                               14.0,
+                                                               7.0
+                                                           ]
+                                                }
+                                   },
+                         "from":  [
+                                      1.75,
+                                      -0.25,
+                                      1.75
+                                  ],
+                         "name":  "hopper",
+                         "to":  [
+                                    14.25,
+                                    4.25,
+                                    14.25
+                                ]
+                     },
+                     {
+                         "faces":  {
+                                       "east":  {
+                                                    "texture":  "#glass",
+                                                    "uv":  [
+                                                               0.0,
+                                                               0.0,
+                                                               16.0,
+                                                               16.0
+                                                           ]
+                                                },
+                                       "north":  {
+                                                     "texture":  "#glass",
+                                                     "uv":  [
+                                                                0.0,
+                                                                0.0,
+                                                                16.0,
+                                                                16.0
+                                                            ]
+                                                 },
+                                       "south":  {
+                                                     "texture":  "#glass",
+                                                     "uv":  [
+                                                                0.0,
+                                                                0.0,
+                                                                16.0,
+                                                                16.0
+                                                            ]
+                                                 },
+                                       "up":  {
+                                                  "texture":  "#glass",
+                                                  "uv":  [
+                                                             0.0,
+                                                             0.0,
+                                                             16.0,
+                                                             16.0
+                                                         ]
+                                              },
+                                       "west":  {
+                                                    "texture":  "#glass",
+                                                    "uv":  [
+                                                               0.0,
+                                                               0.0,
+                                                               16.0,
+                                                               16.0
+                                                           ]
+                                                }
+                                   },
+                         "from":  [
+                                      2.0,
+                                      8.0,
+                                      2.0
+                                  ],
+                         "name":  "glass_lid_outer",
+                         "to":  [
+                                    14.0,
+                                    16.0,
+                                    14.0
+                                ]
+                     },
+                     {
+                         "faces":  {
+                                       "east":  {
+                                                    "texture":  "#glass",
+                                                    "uv":  [
+                                                               0.0,
+                                                               0.0,
+                                                               16.0,
+                                                               16.0
+                                                           ]
+                                                },
+                                       "north":  {
+                                                     "texture":  "#glass",
+                                                     "uv":  [
+                                                                0.0,
+                                                                0.0,
+                                                                16.0,
+                                                                16.0
+                                                            ]
+                                                 },
+                                       "south":  {
+                                                     "texture":  "#glass",
+                                                     "uv":  [
+                                                                0.0,
+                                                                0.0,
+                                                                16.0,
+                                                                16.0
+                                                            ]
+                                                 },
+                                       "west":  {
+                                                    "texture":  "#glass",
+                                                    "uv":  [
+                                                               0.0,
+                                                               0.0,
+                                                               16.0,
+                                                               16.0
+                                                           ]
+                                                }
+                                   },
+                         "from":  [
+                                      3.0,
+                                      15.0,
+                                      3.0
+                                  ],
+                         "name":  "glass_lid_inner",
+                         "to":  [
+                                    13.0,
+                                    8.0,
+                                    13.0
+                                ]
+                     }
+                 ],
+    "render_type":  "minecraft:translucent",
+    "textures":  {
+                     "glass":  "minecraft:block/glass",
+                     "hopper_inside":  "minecraft:block/hopper_inside",
+                     "hopper_outside":  "minecraft:block/hopper_outside",
+                     "hopper_top":  "minecraft:block/hopper_top",
+                     "material":  "minecraft:block/light_gray_terracotta",
+                     "material_top":  "botanypots:block/light_gray_terracotta_pot_top",
+                     "particle":  "#material"
+                 }
+}

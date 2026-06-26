@@ -1,0 +1,205 @@
+{
+  "parent": "block/block",
+  "elements": [
+    {
+      "faces": {
+        "down": {
+          "cullface": "down",
+          "texture": "#material",
+          "uv": [
+            0.0,
+            0.0,
+            12.0,
+            12.0
+          ]
+        },
+        "east": {
+          "texture": "#material",
+          "uv": [
+            0.0,
+            0.0,
+            12.0,
+            8.0
+          ]
+        },
+        "north": {
+          "texture": "#material",
+          "uv": [
+            12.0,
+            0.0,
+            0.0,
+            8.0
+          ]
+        },
+        "south": {
+          "texture": "#material",
+          "uv": [
+            12.0,
+            0.0,
+            0.0,
+            8.0
+          ]
+        },
+        "up": {
+          "texture": "#material_top",
+          "uv": [
+            0.0,
+            0.0,
+            12.0,
+            12.0
+          ]
+        },
+        "west": {
+          "texture": "#material",
+          "uv": [
+            0.0,
+            0.0,
+            12.0,
+            8.0
+          ]
+        }
+      },
+      "from": [
+        2.0,
+        0.0,
+        2.0
+      ],
+      "name": "outer",
+      "to": [
+        14.0,
+        8.0,
+        14.0
+      ]
+    },
+    {
+      "faces": {
+        "east": {
+          "texture": "#material",
+          "uv": [
+            1.0,
+            7.0,
+            11.0,
+            0.0
+          ]
+        },
+        "north": {
+          "texture": "#material",
+          "uv": [
+            11.0,
+            7.0,
+            1.0,
+            0.0
+          ]
+        },
+        "south": {
+          "texture": "#material",
+          "uv": [
+            11.0,
+            7.0,
+            1.0,
+            0.0
+          ]
+        },
+        "up": {
+          "texture": "#material",
+          "uv": [
+            3.0,
+            3.0,
+            13.0,
+            13.0
+          ]
+        },
+        "west": {
+          "texture": "#material",
+          "uv": [
+            1.0,
+            7.0,
+            11.0,
+            0.0
+          ]
+        }
+      },
+      "from": [
+        13.0,
+        8.1,
+        13.0
+      ],
+      "name": "inner",
+      "to": [
+        3.0,
+        1.0,
+        3.0
+      ]
+    },
+    {
+      "faces": {
+        "east": {
+          "texture": "#material",
+          "uv": [
+            0.0,
+            0.0,
+            10.0,
+            7.0
+          ]
+        },
+        "north": {
+          "texture": "#material",
+          "uv": [
+            0.0,
+            0.0,
+            1.0,
+            7.0
+          ]
+        },
+        "south": {
+          "texture": "#material",
+          "uv": [
+            0.0,
+            0.0,
+            1.0,
+            7.0
+          ]
+        },
+        "up": {
+          "texture": "#material_top",
+          "uv": [
+            0.0,
+            0.0,
+            1.0,
+            10.0
+          ]
+        },
+        "west": {
+          "texture": "#material",
+          "uv": [
+            0.0,
+            0.0,
+            10.0,
+            7.0
+          ]
+        }
+      },
+      "from": [
+        7.5,
+        1.0,
+        3.125
+      ],
+      "name": "cell_divider_x",
+      "to": [
+        8.5,
+        7.9375,
+        12.875
+      ]
+    }
+  ],
+  "render_type": "minecraft:cutout",
+  "textures": {
+    "glass": "minecraft:block/glass",
+    "hopper_inside": "minecraft:block/hopper_inside",
+    "hopper_outside": "minecraft:block/hopper_outside",
+    "hopper_top": "minecraft:block/hopper_top",
+    "material": "minecraft:block/lime_glazed_terracotta",
+    "material_top": "botanypots:block/lime_glazed_terracotta_pot_top",
+    "particle": "#material"
+  }
+}
