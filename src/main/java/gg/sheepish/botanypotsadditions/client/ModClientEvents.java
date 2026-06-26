@@ -18,6 +18,7 @@ public final class ModClientEvents {
     @SubscribeEvent
     public static void registerScreens(RegisterMenuScreensEvent event) {
         event.register(ModMenuTypes.CELLED_POT.get(), CelledPotScreen::new);
+        event.register(ModMenuTypes.SPRINKLER_POT.get(), SprinklerPotScreen::new);
     }
 
     @SubscribeEvent

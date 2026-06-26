@@ -1,6 +1,7 @@
 package gg.sheepish.botanypotsadditions.block;
 
 import gg.sheepish.botanypotsadditions.menu.CelledPotMenu;
+import gg.sheepish.botanypotsadditions.menu.SprinklerPotMenu;
 import gg.sheepish.botanypotsadditions.registry.ModBlockEntityTypes;
 import net.darkhax.botanypots.common.api.context.BotanyPotContext;
 import net.darkhax.botanypots.common.api.data.recipes.crop.Crop;
@@ -62,11 +63,13 @@ public class ModPotBlock extends BotanyPotBlock {
     private final VoxelShape shape;
     private final VoxelShape rotatedShape;
     private final boolean greenhouse;
+    private final boolean sprinkler;
     private final int cellCount;
 
-    public ModPotBlock(BlockBehaviour.Properties properties, PotType type, boolean glassLid, boolean greenhouse, boolean doubled, boolean quadrupled) {
+    public ModPotBlock(BlockBehaviour.Properties properties, PotType type, boolean glassLid, boolean greenhouse, boolean sprinkler, boolean doubled, boolean quadrupled) {
         super(properties, type);
         this.greenhouse = greenhouse;
+        this.sprinkler = sprinkler;
         this.cellCount = quadrupled ? 4 : doubled ? 2 : 1;
 
         VoxelShape baseShape = type == PotType.HOPPER ? HOPPER_POT_SHAPE : POT_SHAPE;
@@ -107,8 +110,24 @@ public class ModPotBlock extends BotanyPotBlock {
         return cellCount > 1;
     }
 
+    public boolean isSprinkler() {
+        return sprinkler;
+    }
+
     @Override
     public void openMenu(BlockState state, Level level, BlockPos pos, Player player) {
+        if (isSprinkler()) {
+            MenuProvider menuProvider = getSprinklerMenuProvider(level, pos);
+            if (menuProvider != null && player instanceof ServerPlayer serverPlayer) {
+                serverPlayer.openMenu(menuProvider, buffer -> {
+                    buffer.writeBlockPos(pos);
+                    buffer.writeVarInt(cellCount);
+                    buffer.writeBoolean(type == PotType.HOPPER);
+                });
+                return;
+            }
+        }
+
         if (!isCelled()) {
             super.openMenu(state, level, pos, player);
             return;
@@ -128,6 +147,11 @@ public class ModPotBlock extends BotanyPotBlock {
 
     @Override
     protected MenuProvider getMenuProvider(BlockState state, Level level, BlockPos pos) {
+        if (isSprinkler()) {
+            MenuProvider menuProvider = getSprinklerMenuProvider(level, pos);
+            return menuProvider != null ? menuProvider : super.getMenuProvider(state, level, pos);
+        }
+
         if (!isCelled()) {
             return super.getMenuProvider(state, level, pos);
         }
@@ -159,14 +183,37 @@ public class ModPotBlock extends BotanyPotBlock {
         };
     }
 
+    private MenuProvider getSprinklerMenuProvider(Level level, BlockPos pos) {
+        BlockEntity blockEntity = level.getBlockEntity(pos);
+        ModPotBlockEntity pot = blockEntity instanceof ModPotBlockEntity modPot
+                ? modPot
+                : migrateModPot(level, pos, level.getBlockState(pos), blockEntity);
+
+        if (pot == null) {
+            return null;
+        }
+
+        return new MenuProvider() {
+            @Override
+            public Component getDisplayName() {
+                return pot.getDisplayName();
+            }
+
+            @Override
+            public AbstractContainerMenu createMenu(int containerId, Inventory playerInventory, Player menuPlayer) {
+                return new SprinklerPotMenu(containerId, playerInventory, pot, cellCount, type == PotType.HOPPER, pos);
+            }
+        };
+    }
+
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return isCelled() ? new ModPotBlockEntity(pos, state, cellCount) : super.newBlockEntity(pos, state);
+        return isCelled() || isSprinkler() ? new ModPotBlockEntity(pos, state, cellCount, isSprinkler()) : super.newBlockEntity(pos, state);
     }
 
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> blockEntityType) {
-        if (!isCelled()) {
+        if (!isCelled() && !isSprinkler()) {
             return super.getTicker(level, state, blockEntityType);
         }
 
@@ -176,22 +223,26 @@ public class ModPotBlock extends BotanyPotBlock {
 
         return (tickerLevel, pos, tickerState, blockEntity) -> {
             if (blockEntity instanceof ModPotBlockEntity pot) {
-                ModPotBlockEntity.tickCelledPot(tickerLevel, pos, tickerState, pot);
+                ModPotBlockEntity.tickModPot(tickerLevel, pos, tickerState, pot);
             } else if (blockEntity instanceof BotanyPotBlockEntity pot) {
-                ModPotBlockEntity migratedPot = migrateCelledPot(tickerLevel, pos, tickerState, pot);
+                ModPotBlockEntity migratedPot = migrateModPot(tickerLevel, pos, tickerState, pot);
                 if (migratedPot != null) {
-                    ModPotBlockEntity.tickCelledPot(tickerLevel, pos, tickerState, migratedPot);
+                    ModPotBlockEntity.tickModPot(tickerLevel, pos, tickerState, migratedPot);
                 }
             }
         };
     }
 
     private ModPotBlockEntity migrateCelledPot(Level level, BlockPos pos, BlockState state, BlockEntity blockEntity) {
-        if (!isCelled() || !(blockEntity instanceof BotanyPotBlockEntity oldPot)) {
+        return migrateModPot(level, pos, state, blockEntity);
+    }
+
+    private ModPotBlockEntity migrateModPot(Level level, BlockPos pos, BlockState state, BlockEntity blockEntity) {
+        if ((!isCelled() && !isSprinkler()) || !(blockEntity instanceof BotanyPotBlockEntity oldPot)) {
             return null;
         }
 
-        ModPotBlockEntity newPot = new ModPotBlockEntity(pos, state, cellCount);
+        ModPotBlockEntity newPot = new ModPotBlockEntity(pos, state, cellCount, isSprinkler());
         int slotsToCopy = Math.min(oldPot.getContainerSize(), newPot.getContainerSize());
 
         for (int slot = 0; slot < slotsToCopy; slot++) {

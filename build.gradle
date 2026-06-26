@@ -143,6 +143,7 @@ dependencies {
     localRuntime "maven.modrinth:Rw1NrDzF:${cucumber_version}"
     localRuntime "maven.modrinth:C95ReXie:${mystical_agriculture_version}"
     localRuntime "maven.modrinth:SaWFztxY:${botany_pots_mystical_agriculture_compat_version}"
+    localRuntime "maven.modrinth:Ce6I4WUE:${mekanism_version}"
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.

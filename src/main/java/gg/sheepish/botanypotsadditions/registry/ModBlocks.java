@@ -131,7 +131,7 @@ public final class ModBlocks {
 
     private static void registerPot(PotStyle style, PotVariant variant, PotForm form) {
         String name = style.id() + "_" + variant.id() + "_" + form.id();
-        DeferredBlock<Block> block = BLOCKS.register(name, () -> new ModPotBlock(potProperties(), form.potType(), variant.hasGlassLid(), variant.isGreenhouse(), variant.isDouble(), variant.isQuadruple()));
+        DeferredBlock<Block> block = BLOCKS.register(name, () -> new ModPotBlock(potProperties(), form.potType(), variant.hasGlassLid(), variant.isGreenhouse(), variant.isSprinkler(), variant.isDouble(), variant.isQuadruple()));
         DeferredItem<BlockItem> item = registerBlockItem(name, block);
 
         POT_BLOCKS.add(new PotBlockEntry(style, variant, form, block, item));
