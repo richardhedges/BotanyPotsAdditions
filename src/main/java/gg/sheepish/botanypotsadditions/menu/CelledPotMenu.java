@@ -61,7 +61,7 @@ public class CelledPotMenu extends AbstractContainerMenu {
 
         for (int cell = 0; cell < cellCount; cell++) {
             final int seedCell = cell;
-            addSlot(new SingleItemSlot(potContainer, seedSlotForCell(seedCell), seedX(seedCell), seedY(seedCell), stack -> isSeed(seedCell, stack)));
+            addSlot(new SeedSlot(potContainer, seedSlotForCell(seedCell), seedX(seedCell), seedY(seedCell), seedCell, stack -> isSeed(seedCell, stack)));
         }
 
         if (hopper) {
@@ -168,12 +168,22 @@ public class CelledPotMenu extends AbstractContainerMenu {
         return 22;
     }
 
+    public int getRequiredGrowthTicks(Slot slot) {
+        int cell = seedCellForSlot(slot);
+        CellBotanyPotContext context = cell >= 0 ? contextForCell(cell, slot.getItem()) : null;
+        return context != null ? context.getRequiredGrowthTicks() : -1;
+    }
+
     private int inputX() {
         return hopper ? HOPPER_INPUT_X : BASIC_INPUT_X;
     }
 
     private int seedSlotForCell(int cell) {
         return cell == 0 ? ModPotBlockEntity.BASE_SEED_SLOT : STORAGE_END_EXCLUSIVE + cell - 1;
+    }
+
+    private int seedCellForSlot(Slot slot) {
+        return slot instanceof SeedSlot seedSlot ? seedSlot.cell() : -1;
     }
 
     private boolean isSoil(ItemStack stack) {
@@ -189,8 +199,12 @@ public class CelledPotMenu extends AbstractContainerMenu {
     }
 
     private CellBotanyPotContext contextForCell(int cell) {
+        return contextForCell(cell, ItemStack.EMPTY);
+    }
+
+    private CellBotanyPotContext contextForCell(int cell, ItemStack seedOverride) {
         if (level.getBlockEntity(pos) instanceof ModPotBlockEntity pot) {
-            return new CellBotanyPotContext(pot, cell, playerInventory.player, null);
+            return new CellBotanyPotContext(pot, cell, playerInventory.player, null, seedOverride);
         }
 
         return null;
@@ -234,6 +248,19 @@ public class CelledPotMenu extends AbstractContainerMenu {
         @Override
         public int getMaxStackSize(ItemStack stack) {
             return 1;
+        }
+    }
+
+    private static class SeedSlot extends SingleItemSlot {
+        private final int cell;
+
+        SeedSlot(Container container, int slot, int x, int y, int cell, Predicate<ItemStack> validator) {
+            super(container, slot, x, y, validator);
+            this.cell = cell;
+        }
+
+        int cell() {
+            return cell;
         }
     }
 }

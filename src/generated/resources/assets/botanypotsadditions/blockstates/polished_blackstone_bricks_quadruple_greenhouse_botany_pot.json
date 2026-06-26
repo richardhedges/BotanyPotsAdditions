@@ -1,7 +1,19 @@
 {
   "variants": {
-    "": {
+    "facing=east": {
+      "model": "botanypotsadditions:block/polished_blackstone_bricks_quadruple_greenhouse_botany_pot",
+      "y": 90
+    },
+    "facing=north": {
       "model": "botanypotsadditions:block/polished_blackstone_bricks_quadruple_greenhouse_botany_pot"
+    },
+    "facing=south": {
+      "model": "botanypotsadditions:block/polished_blackstone_bricks_quadruple_greenhouse_botany_pot",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "botanypotsadditions:block/polished_blackstone_bricks_quadruple_greenhouse_botany_pot",
+      "y": 270
     }
   }
 }

@@ -1,7 +1,19 @@
 {
   "variants": {
-    "": {
+    "facing=east": {
+      "model": "botanypotsadditions:block/purple_concrete_double_greenhouse_botany_pot",
+      "y": 90
+    },
+    "facing=north": {
       "model": "botanypotsadditions:block/purple_concrete_double_greenhouse_botany_pot"
+    },
+    "facing=south": {
+      "model": "botanypotsadditions:block/purple_concrete_double_greenhouse_botany_pot",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "botanypotsadditions:block/purple_concrete_double_greenhouse_botany_pot",
+      "y": 270
     }
   }
 }

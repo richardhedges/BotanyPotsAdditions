@@ -68,13 +68,27 @@ public class ModModelProvider implements DataProvider {
     private static JsonObject blockState(PotBlockEntry entry) {
         JsonObject blockState = new JsonObject();
         JsonObject variants = new JsonObject();
-        JsonObject variant = new JsonObject();
 
-        variant.addProperty("model", BotanyPotsAdditions.MODID + ":block/" + entry.id());
-        variants.add("", variant);
+        addFacingVariant(variants, entry, "north", 0);
+        addFacingVariant(variants, entry, "east", 90);
+        addFacingVariant(variants, entry, "south", 180);
+        addFacingVariant(variants, entry, "west", 270);
+
         blockState.add("variants", variants);
 
         return blockState;
+    }
+
+    private static void addFacingVariant(JsonObject variants, PotBlockEntry entry, String facing, int yRotation) {
+        JsonObject variant = new JsonObject();
+
+        variant.addProperty("model", BotanyPotsAdditions.MODID + ":block/" + entry.id());
+
+        if (yRotation != 0) {
+            variant.addProperty("y", yRotation);
+        }
+
+        variants.add("facing=" + facing, variant);
     }
 
     private static JsonObject itemModel(PotBlockEntry entry) {
@@ -108,7 +122,7 @@ public class ModModelProvider implements DataProvider {
         }
 
         if (entry.variant().hasGlassLid()) {
-            addGlassLid(elements);
+            addGlassLid(elements, entry.variant().isDouble() || entry.variant().isQuadruple());
         }
 
         if (entry.variant().isSprinkler()) {
@@ -151,8 +165,9 @@ public class ModModelProvider implements DataProvider {
         elements.add(hopper);
     }
 
-    private static void addGlassLid(JsonArray elements) {
-        JsonObject outer = element("glass_lid_outer", 2, 8, 2, 14, 16, 14);
+    private static void addGlassLid(JsonArray elements, boolean celled) {
+        double bottom = celled ? 8.125 : 8;
+        JsonObject outer = element("glass_lid_outer", 2, bottom, 2, 14, 16, 14);
         faces(outer,
                 face("north", 0, 0, 16, 16, "#glass", null),
                 face("east", 0, 0, 16, 16, "#glass", null),
@@ -161,7 +176,7 @@ public class ModModelProvider implements DataProvider {
                 face("up", 0, 0, 16, 16, "#glass", null));
         elements.add(outer);
 
-        JsonObject inner = element("glass_lid_inner", 3, 15, 3, 13, 8, 13);
+        JsonObject inner = element("glass_lid_inner", 3, 15, 3, 13, bottom, 13);
         faces(inner,
                 face("north", 0, 0, 16, 16, "#glass", null),
                 face("east", 0, 0, 16, 16, "#glass", null),
@@ -193,7 +208,7 @@ public class ModModelProvider implements DataProvider {
     }
 
     private static void addXDivider(JsonArray elements) {
-        JsonObject divider = element("cell_divider_x", 7.5, 1, 3.125, 8.5, 7.9375, 12.875);
+        JsonObject divider = element("cell_divider_x", 7.5, 1, 3, 8.5, 8.0625, 13);
         faces(divider,
                 face("north", 0, 0, 1, 7, "#material", null),
                 face("east", 0, 0, 10, 7, "#material", null),
@@ -204,7 +219,7 @@ public class ModModelProvider implements DataProvider {
     }
 
     private static void addZDivider(JsonArray elements) {
-        JsonObject divider = element("cell_divider_z", 3.125, 1, 7.5, 12.875, 7.9375, 8.5);
+        JsonObject divider = element("cell_divider_z", 3, 1, 7.5, 13, 8.0625, 8.5);
         faces(divider,
                 face("north", 0, 0, 10, 7, "#material", null),
                 face("east", 0, 0, 1, 7, "#material", null),

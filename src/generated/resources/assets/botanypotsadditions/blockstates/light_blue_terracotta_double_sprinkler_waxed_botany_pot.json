@@ -1,7 +1,19 @@
 {
   "variants": {
-    "": {
+    "facing=east": {
+      "model": "botanypotsadditions:block/light_blue_terracotta_double_sprinkler_waxed_botany_pot",
+      "y": 90
+    },
+    "facing=north": {
       "model": "botanypotsadditions:block/light_blue_terracotta_double_sprinkler_waxed_botany_pot"
+    },
+    "facing=south": {
+      "model": "botanypotsadditions:block/light_blue_terracotta_double_sprinkler_waxed_botany_pot",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "botanypotsadditions:block/light_blue_terracotta_double_sprinkler_waxed_botany_pot",
+      "y": 270
     }
   }
 }

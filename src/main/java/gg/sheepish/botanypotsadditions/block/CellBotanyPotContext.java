@@ -11,7 +11,25 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.loot.LootParams;
 
-public record CellBotanyPotContext(ModPotBlockEntity pot, int cell, Player player, InteractionHand hand) implements BotanyPotContext {
+public class CellBotanyPotContext implements BotanyPotContext {
+    private final ModPotBlockEntity pot;
+    private final int cell;
+    private final Player player;
+    private final InteractionHand hand;
+    private final ItemStack seedOverride;
+
+    public CellBotanyPotContext(ModPotBlockEntity pot, int cell, Player player, InteractionHand hand) {
+        this(pot, cell, player, hand, ItemStack.EMPTY);
+    }
+
+    public CellBotanyPotContext(ModPotBlockEntity pot, int cell, Player player, InteractionHand hand, ItemStack seedOverride) {
+        this.pot = pot;
+        this.cell = cell;
+        this.player = player;
+        this.hand = hand;
+        this.seedOverride = seedOverride;
+    }
+
     @Override
     public ItemStack getItem(int slot) {
         return slot == ModPotBlockEntity.BASE_SEED_SLOT ? getSeedItem() : pot.getItem(slot);
@@ -29,7 +47,7 @@ public record CellBotanyPotContext(ModPotBlockEntity pot, int cell, Player playe
 
     @Override
     public ItemStack getSeedItem() {
-        return pot.getSeedItem(cell);
+        return seedOverride.isEmpty() ? pot.getSeedItem(cell) : seedOverride;
     }
 
     @Override

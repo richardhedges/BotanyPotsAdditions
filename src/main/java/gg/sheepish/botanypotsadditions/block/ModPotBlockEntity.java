@@ -1,6 +1,7 @@
 package gg.sheepish.botanypotsadditions.block;
 
 import net.darkhax.botanypots.common.impl.Helpers;
+import gg.sheepish.botanypotsadditions.registry.ModBlockEntityTypes;
 import net.darkhax.botanypots.common.api.data.recipes.crop.Crop;
 import net.darkhax.botanypots.common.api.data.recipes.soil.Soil;
 import net.darkhax.botanypots.common.impl.block.entity.BotanyPotBlockEntity;
@@ -22,8 +23,12 @@ public class ModPotBlockEntity extends BotanyPotBlockEntity {
     private final int cellCount;
     private final int containerSize;
 
+    public ModPotBlockEntity(BlockPos pos, BlockState state) {
+        this(pos, state, cellCountForState(state));
+    }
+
     public ModPotBlockEntity(BlockPos pos, BlockState state, int cellCount) {
-        super(BotanyPotBlockEntity.TYPE, pos, state);
+        super(ModBlockEntityTypes.CELLED_POT_AS_BOTANY, pos, state);
         this.cellCount = Math.max(1, cellCount);
         this.containerSize = VANILLA_SLOT_COUNT + Math.max(0, this.cellCount - 1);
 
@@ -73,9 +78,8 @@ public class ModPotBlockEntity extends BotanyPotBlockEntity {
             ItemStack stack = getItem(slot);
 
             if (!stack.isEmpty()) {
-                CompoundTag itemTag = new CompoundTag();
+                CompoundTag itemTag = (CompoundTag) stack.save(registries, new CompoundTag());
                 itemTag.putByte("Slot", (byte) slot);
-                stack.save(registries, itemTag);
                 items.add(itemTag);
             }
         }
@@ -182,5 +186,9 @@ public class ModPotBlockEntity extends BotanyPotBlockEntity {
 
     private boolean isExtraSeedSlot(int slot) {
         return slot >= VANILLA_SLOT_COUNT && slot < getContainerSize();
+    }
+
+    private static int cellCountForState(BlockState state) {
+        return state.getBlock() instanceof ModPotBlock pot ? pot.cellCount() : 1;
     }
 }

@@ -1,6 +1,7 @@
 package gg.sheepish.botanypotsadditions.client;
 
 import gg.sheepish.botanypotsadditions.BotanyPotsAdditions;
+import gg.sheepish.botanypotsadditions.registry.ModBlockEntityTypes;
 import gg.sheepish.botanypotsadditions.registry.ModMenuTypes;
 import net.darkhax.botanypots.common.impl.block.entity.BotanyPotBlockEntity;
 import net.neoforged.api.distmarker.Dist;
@@ -22,5 +23,6 @@ public final class ModClientEvents {
     @SubscribeEvent
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerBlockEntityRenderer(BotanyPotBlockEntity.TYPE.get(), CelledPotRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntityTypes.CELLED_POT.get(), CelledPotRenderer::new);
     }
 }

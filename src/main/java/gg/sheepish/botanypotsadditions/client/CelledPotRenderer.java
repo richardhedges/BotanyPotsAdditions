@@ -22,11 +22,13 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 
 public class CelledPotRenderer implements BlockEntityRenderer<BotanyPotBlockEntity> {
     private static final float SOIL_HEIGHT_SCALE = 0.6375F;
-    private static final float DOUBLE_SOIL_WIDTH = 0.5F;
-    private static final float DOUBLE_SOIL_DEPTH = 1F;
-    private static final float DOUBLE_CROP_SCALE = 0.46F;
-    private static final float QUADRUPLE_SOIL_SIZE = 0.5F;
-    private static final float QUADRUPLE_CROP_SCALE = 0.36F;
+    private static final float DOUBLE_SOIL_WIDTH = 8F / 16F;
+    private static final float DOUBLE_SOIL_DEPTH = 16F / 16F;
+    private static final float DOUBLE_CROP_SCALE = 0.6F;
+    private static final float QUADRUPLE_SOIL_SIZE = 8F / 16F;
+    private static final float QUADRUPLE_CROP_SCALE = 0.6F;
+    private static final float CELL_LOW_CENTER = 5.25F / 16F;
+    private static final float CELL_HIGH_CENTER = 10.75F / 16F;
 
     private final BlockEntityRendererProvider.Context renderContext;
     private final BotanyPotRenderer fallback;
@@ -132,7 +134,7 @@ public class CelledPotRenderer implements BlockEntityRenderer<BotanyPotBlockEnti
 
     private static float[] cellOffset(ModPotBlockEntity pot, int cell) {
         return pot.cellCount() == 2
-                ? new float[][] {{0.275F, 0.5F}, {0.725F, 0.5F}}[cell]
-                : new float[][] {{0.275F, 0.275F}, {0.725F, 0.275F}, {0.275F, 0.725F}, {0.725F, 0.725F}}[cell];
+                ? new float[][] {{CELL_LOW_CENTER, 0.5F}, {CELL_HIGH_CENTER, 0.5F}}[cell]
+                : new float[][] {{CELL_LOW_CENTER, CELL_LOW_CENTER}, {CELL_HIGH_CENTER, CELL_LOW_CENTER}, {CELL_LOW_CENTER, CELL_HIGH_CENTER}, {CELL_HIGH_CENTER, CELL_HIGH_CENTER}}[cell];
     }
 }
