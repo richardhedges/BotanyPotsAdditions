@@ -7,6 +7,8 @@ import java.util.function.Supplier;
 
 import gg.sheepish.botanypotsadditions.BotanyPotsAdditions;
 import gg.sheepish.botanypotsadditions.block.ModPotBlock;
+import net.darkhax.botanypots.common.impl.block.BotanyPotBlock;
+import net.darkhax.botanypots.common.impl.block.PotType;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
@@ -129,7 +131,7 @@ public final class ModBlocks {
 
     private static void registerPot(PotStyle style, PotVariant variant, PotForm form) {
         String name = style.id() + "_" + variant.id() + "_" + form.id();
-        DeferredBlock<Block> block = BLOCKS.register(name, () -> new ModPotBlock(potProperties(), variant.isGreenhouse(), form.isHopper(), variant.isDouble(), variant.isQuadruple()));
+        DeferredBlock<Block> block = BLOCKS.register(name, () -> new ModPotBlock(potProperties(), form.potType(), variant.hasGlassLid(), variant.isGreenhouse(), variant.isDouble(), variant.isQuadruple()));
         DeferredItem<BlockItem> item = registerBlockItem(name, block);
 
         POT_BLOCKS.add(new PotBlockEntry(style, variant, form, block, item));
@@ -144,9 +146,10 @@ public final class ModBlocks {
     private static BlockBehaviour.Properties potProperties() {
         return BlockBehaviour.Properties.of()
                 .mapColor(MapColor.TERRACOTTA_BROWN)
-                .strength(0.6F)
+                .strength(1.25F, 4.2F)
                 .sound(SoundType.DECORATED_POT)
-                .noOcclusion();
+                .noOcclusion()
+                .lightLevel(BotanyPotBlock.LIGHT_LEVEL);
     }
 
     public record PotStyle(String id) {
@@ -167,11 +170,31 @@ public final class ModBlocks {
         public boolean isGreenhouse() {
             return id.contains("greenhouse");
         }
+
+        public boolean isSprinkler() {
+            return id.contains("sprinkler");
+        }
+
+        public boolean hasGlassLid() {
+            return isGreenhouse() || isSprinkler();
+        }
     }
 
     public record PotForm(String id) {
         public boolean isHopper() {
             return id.equals("hopper_botany_pot");
+        }
+
+        public PotType potType() {
+            if (isHopper()) {
+                return PotType.HOPPER;
+            }
+
+            if (id.equals("waxed_botany_pot")) {
+                return PotType.WAXED;
+            }
+
+            return PotType.BASIC;
         }
     }
 

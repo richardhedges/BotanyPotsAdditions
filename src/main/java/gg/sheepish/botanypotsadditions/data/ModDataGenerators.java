@@ -16,5 +16,9 @@ public final class ModDataGenerators {
             event.addProvider(new ModModelProvider(event.getGenerator().getPackOutput()));
             event.addProvider(new ModLanguageProvider(event.getGenerator().getPackOutput()));
         }
+
+        if (event.includeServer()) {
+            event.addProvider(new ModTagProvider(event.getGenerator().getPackOutput()));
+        }
     }
 }

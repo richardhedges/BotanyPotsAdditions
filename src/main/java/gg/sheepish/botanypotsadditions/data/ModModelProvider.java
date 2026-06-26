@@ -49,7 +49,7 @@ public class ModModelProvider implements DataProvider {
     private static JsonObject blockModel(PotBlockEntry entry) {
         JsonObject model = new JsonObject();
         model.addProperty("parent", "block/block");
-        model.addProperty("render_type", entry.variant().isGreenhouse() ? "minecraft:translucent" : "minecraft:cutout");
+        model.addProperty("render_type", entry.variant().hasGlassLid() ? "minecraft:translucent" : "minecraft:cutout");
 
         JsonObject textures = new JsonObject();
         textures.addProperty("material", materialTexture(entry));
@@ -107,8 +107,12 @@ public class ModModelProvider implements DataProvider {
             addZDivider(elements);
         }
 
-        if (entry.variant().isGreenhouse()) {
+        if (entry.variant().hasGlassLid()) {
             addGlassLid(elements);
+        }
+
+        if (entry.variant().isSprinkler()) {
+            addSprinkler(elements);
         }
 
         return elements;
@@ -164,6 +168,28 @@ public class ModModelProvider implements DataProvider {
                 face("south", 0, 0, 16, 16, "#glass", null),
                 face("west", 0, 0, 16, 16, "#glass", null));
         elements.add(inner);
+    }
+
+    private static void addSprinkler(JsonArray elements) {
+        JsonObject body = element("sprinkler_body", 6.5, 14, 6.5, 9.5, 15, 9.5);
+        faces(body,
+                face("north", 0, 0, 3, 1, "#hopper_outside", null),
+                face("east", 0, 0, 3, 1, "#hopper_outside", null),
+                face("south", 0, 0, 3, 1, "#hopper_outside", null),
+                face("west", 0, 0, 3, 1, "#hopper_outside", null),
+                face("up", 0, 0, 3, 3, "#hopper_outside", null),
+                face("down", 0, 0, 3, 3, "#hopper_outside", null));
+        elements.add(body);
+
+        JsonObject nozzle = element("sprinkler_nozzle", 7.25, 13.25, 7.25, 8.75, 14, 8.75);
+        faces(nozzle,
+                face("north", 0, 0, 1.5, 0.75, "#hopper_outside", null),
+                face("east", 0, 0, 1.5, 0.75, "#hopper_outside", null),
+                face("south", 0, 0, 1.5, 0.75, "#hopper_outside", null),
+                face("west", 0, 0, 1.5, 0.75, "#hopper_outside", null),
+                face("up", 0, 0, 1.5, 1.5, "#hopper_outside", null),
+                face("down", 0, 0, 1.5, 1.5, "#hopper_outside", null));
+        elements.add(nozzle);
     }
 
     private static void addXDivider(JsonArray elements) {
