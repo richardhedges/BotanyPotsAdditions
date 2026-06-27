@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "bookshelf:load_conditions": [
+    {
+      "type": "botanypots:config",
+      "property": "can_craft_hopper_pots"
+    }
+  ],
+  "category": "misc",
+  "group": "botanypotsadditions:hopper_pot",
+  "ingredients": [
+    {
+      "item": "minecraft:hopper"
+    },
+    {
+      "item": "botanypotsadditions:black_terracotta_double_botany_pot"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "botanypotsadditions:black_terracotta_double_hopper_botany_pot"
+  }
+}

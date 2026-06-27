@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "bookshelf:load_conditions": [
+    {
+      "type": "botanypots:config",
+      "property": "can_craft_basic_pots"
+    }
+  ],
+  "category": "misc",
+  "group": "botanypotsadditions:celled_pot",
+  "key": {
+    "P": {
+      "item": "botanypots:nether_bricks_botany_pot"
+    }
+  },
+  "pattern": [
+    "PP"
+  ],
+  "result": {
+    "count": 1,
+    "id": "botanypotsadditions:nether_bricks_double_botany_pot"
+  }
+}

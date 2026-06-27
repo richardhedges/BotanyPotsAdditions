@@ -1,0 +1,31 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "bookshelf:load_conditions": [
+    {
+      "type": "botanypots:config",
+      "property": "can_craft_basic_pots"
+    }
+  ],
+  "category": "misc",
+  "group": "botanypotsadditions:greenhouse_pot",
+  "key": {
+    "G": {
+      "item": "minecraft:glass"
+    },
+    "M": {
+      "item": "minecraft:brown_concrete"
+    },
+    "P": {
+      "item": "minecraft:flower_pot"
+    }
+  },
+  "pattern": [
+    "GGG",
+    "MPM",
+    " M "
+  ],
+  "result": {
+    "count": 1,
+    "id": "botanypotsadditions:brown_concrete_greenhouse_botany_pot"
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "bookshelf:load_conditions": [
+    {
+      "type": "botanypots:config",
+      "property": "can_wax_pots"
+    }
+  ],
+  "category": "misc",
+  "group": "botanypotsadditions:greenhouse_pot",
+  "key": {
+    "G": {
+      "item": "minecraft:glass"
+    },
+    "P": {
+      "item": "botanypotsadditions:cyan_concrete_double_waxed_botany_pot"
+    }
+  },
+  "pattern": [
+    "GGG",
+    " P "
+  ],
+  "result": {
+    "count": 1,
+    "id": "botanypotsadditions:cyan_concrete_double_greenhouse_waxed_botany_pot"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "bookshelf:load_conditions": [
+    {
+      "type": "botanypots:config",
+      "property": "can_craft_hopper_pots"
+    }
+  ],
+  "category": "misc",
+  "group": "botanypotsadditions:celled_pot",
+  "key": {
+    "P": {
+      "item": "botanypots:light_gray_terracotta_hopper_botany_pot"
+    }
+  },
+  "pattern": [
+    "PP",
+    "PP"
+  ],
+  "result": {
+    "count": 1,
+    "id": "botanypotsadditions:light_gray_terracotta_quadruple_hopper_botany_pot"
+  }
+}

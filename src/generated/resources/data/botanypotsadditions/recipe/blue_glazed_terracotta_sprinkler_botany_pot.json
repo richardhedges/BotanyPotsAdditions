@@ -1,0 +1,31 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "bookshelf:load_conditions": [
+    {
+      "type": "botanypots:config",
+      "property": "can_craft_basic_pots"
+    }
+  ],
+  "category": "misc",
+  "group": "botanypotsadditions:sprinkler_pot",
+  "key": {
+    "G": {
+      "item": "minecraft:gold_ingot"
+    },
+    "I": {
+      "tag": "c:ingots/iron"
+    },
+    "P": {
+      "item": "botanypotsadditions:blue_glazed_terracotta_greenhouse_botany_pot"
+    }
+  },
+  "pattern": [
+    " I ",
+    "IGI",
+    " P "
+  ],
+  "result": {
+    "count": 1,
+    "id": "botanypotsadditions:blue_glazed_terracotta_sprinkler_botany_pot"
+  }
+}

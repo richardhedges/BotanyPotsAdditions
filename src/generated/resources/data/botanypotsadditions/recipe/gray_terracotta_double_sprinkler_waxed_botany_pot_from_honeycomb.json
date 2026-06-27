@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "bookshelf:load_conditions": [
+    {
+      "type": "botanypots:config",
+      "property": "can_wax_pots"
+    }
+  ],
+  "category": "misc",
+  "group": "botanypotsadditions:waxed_pot",
+  "ingredients": [
+    {
+      "item": "minecraft:honeycomb"
+    },
+    {
+      "item": "botanypotsadditions:gray_terracotta_double_sprinkler_botany_pot"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "botanypotsadditions:gray_terracotta_double_sprinkler_waxed_botany_pot"
+  }
+}

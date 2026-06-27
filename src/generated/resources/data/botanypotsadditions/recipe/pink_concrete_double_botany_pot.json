@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "bookshelf:load_conditions": [
+    {
+      "type": "botanypots:config",
+      "property": "can_craft_basic_pots"
+    }
+  ],
+  "category": "misc",
+  "group": "botanypotsadditions:celled_pot",
+  "key": {
+    "P": {
+      "item": "botanypots:pink_concrete_botany_pot"
+    }
+  },
+  "pattern": [
+    "PP"
+  ],
+  "result": {
+    "count": 1,
+    "id": "botanypotsadditions:pink_concrete_double_botany_pot"
+  }
+}

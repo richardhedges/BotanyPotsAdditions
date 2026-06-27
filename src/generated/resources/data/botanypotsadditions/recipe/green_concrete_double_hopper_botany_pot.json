@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "bookshelf:load_conditions": [
+    {
+      "type": "botanypots:config",
+      "property": "can_craft_hopper_pots"
+    }
+  ],
+  "category": "misc",
+  "group": "botanypotsadditions:celled_pot",
+  "key": {
+    "P": {
+      "item": "botanypots:green_concrete_hopper_botany_pot"
+    }
+  },
+  "pattern": [
+    "PP"
+  ],
+  "result": {
+    "count": 1,
+    "id": "botanypotsadditions:green_concrete_double_hopper_botany_pot"
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "bookshelf:load_conditions": [
+    {
+      "type": "botanypots:config",
+      "property": "can_craft_hopper_pots"
+    }
+  ],
+  "category": "misc",
+  "group": "botanypotsadditions:greenhouse_pot",
+  "key": {
+    "G": {
+      "item": "minecraft:glass"
+    },
+    "P": {
+      "item": "botanypotsadditions:white_concrete_double_hopper_botany_pot"
+    }
+  },
+  "pattern": [
+    "G G",
+    " P "
+  ],
+  "result": {
+    "count": 1,
+    "id": "botanypotsadditions:white_concrete_double_greenhouse_hopper_botany_pot"
+  }
+}

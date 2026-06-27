@@ -1,0 +1,34 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "bookshelf:load_conditions": [
+    {
+      "type": "botanypots:config",
+      "property": "can_craft_hopper_pots"
+    }
+  ],
+  "category": "misc",
+  "group": "botanypotsadditions:greenhouse_pot",
+  "key": {
+    "G": {
+      "item": "minecraft:glass"
+    },
+    "H": {
+      "item": "minecraft:hopper"
+    },
+    "M": {
+      "item": "minecraft:deepslate_bricks"
+    },
+    "P": {
+      "item": "minecraft:flower_pot"
+    }
+  },
+  "pattern": [
+    "GHG",
+    "MPM",
+    " M "
+  ],
+  "result": {
+    "count": 1,
+    "id": "botanypotsadditions:deepslate_bricks_greenhouse_hopper_botany_pot"
+  }
+}
