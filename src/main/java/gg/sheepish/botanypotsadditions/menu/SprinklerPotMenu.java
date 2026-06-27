@@ -22,12 +22,15 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
 public class SprinklerPotMenu extends AbstractContainerMenu {
+    public static final int GROWTH_PAUSED = -2;
+
     private static final int TOOL_SLOT = 2;
     private static final int STORAGE_START = 3;
     private static final int STORAGE_END_EXCLUSIVE = 15;
-    private static final int HOPPER_OUTPUT_X = 98;
+    private static final int HOPPER_OUTPUT_X = 86;
     private static final int BASIC_INPUT_X = 80;
-    private static final int HOPPER_INPUT_X = 44;
+    private static final int HOPPER_INPUT_X = 35;
+    private static final int HOPPER_TOOL_X = 9;
 
     private final Level level;
     private final Inventory playerInventory;
@@ -72,7 +75,7 @@ public class SprinklerPotMenu extends AbstractContainerMenu {
         }
 
         if (hopper) {
-            addSlot(new ValidatingSlot(potContainer, TOOL_SLOT, 18, 48, stack -> stack.is(BotanyPotMenu.HARVEST_ITEM)));
+            addSlot(new ValidatingSlot(potContainer, TOOL_SLOT, HOPPER_TOOL_X, 48, stack -> stack.is(BotanyPotMenu.HARVEST_ITEM)));
 
             for (int row = 0; row < 3; row++) {
                 for (int column = 0; column < 4; column++) {
@@ -181,12 +184,12 @@ public class SprinklerPotMenu extends AbstractContainerMenu {
     public int seedX(int cell) {
         if (hopper) {
             if (cellCount == 1) {
-                return 36;
+                return 27;
             }
 
             return cellCount == 2
-                    ? new int[] {18, 36}[cell]
-                    : new int[] {18, 36, 54, 72}[cell];
+                    ? new int[] {9, 27}[cell]
+                    : new int[] {9, 27, 45, 63}[cell];
         }
 
         if (cellCount == 1) {
@@ -205,7 +208,14 @@ public class SprinklerPotMenu extends AbstractContainerMenu {
     public int getRequiredGrowthTicks(Slot slot) {
         int cell = seedCellForSlot(slot);
         CellBotanyPotContext context = cell >= 0 ? contextForCell(cell, slot.getItem()) : null;
-        return context != null ? context.getRequiredGrowthTicks() : -1;
+        int requiredGrowthTicks = context != null ? context.getRequiredGrowthTicks() : -1;
+
+        if (requiredGrowthTicks <= 0) {
+            return -1;
+        }
+
+        int sprinklerGrowthTicks = ModPotBlockEntity.getSprinklerGrowthTicks(energyStored, waterStored);
+        return sprinklerGrowthTicks > 0 ? Math.max(1, (requiredGrowthTicks + sprinklerGrowthTicks - 1) / sprinklerGrowthTicks) : GROWTH_PAUSED;
     }
 
     private int inputX() {

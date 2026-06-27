@@ -30,8 +30,7 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 public class ModPotBlock extends BotanyPotBlock {
-    private static final float GREENHOUSE_GROW_TIME_MULTIPLIER = 0.75F;
-
+    public static final float OUTPUT_YIELD_MODIFIER = 0.5F;
     private static final VoxelShape POT_SHAPE = Shapes.or(
             box(2.0D, 0.0D, 2.0D, 14.0D, 1.0D, 14.0D),
             box(2.0D, 1.0D, 2.0D, 3.0D, 8.0D, 14.0D),
@@ -93,13 +92,12 @@ public class ModPotBlock extends BotanyPotBlock {
 
     @Override
     public float getGrowthModifier(BotanyPotContext context, Level level, Crop crop, Soil soil) {
-        return greenhouse
-                ? growthSpeedModifierForTimeMultiplier(GREENHOUSE_GROW_TIME_MULTIPLIER)
-                : super.getGrowthModifier(context, level, crop, soil);
+        return super.getGrowthModifier(context, level, crop, soil);
     }
 
-    private static float growthSpeedModifierForTimeMultiplier(float timeMultiplier) {
-        return (1F / timeMultiplier) - 1F;
+    @Override
+    public float getYieldModifier(BotanyPotContext context, Level level, Crop crop, Soil soil) {
+        return super.getYieldModifier(context, level, crop, soil) + (hasOutputBonus() ? OUTPUT_YIELD_MODIFIER : 0F);
     }
 
     public int cellCount() {
@@ -112,6 +110,10 @@ public class ModPotBlock extends BotanyPotBlock {
 
     public boolean isSprinkler() {
         return sprinkler;
+    }
+
+    public boolean hasOutputBonus() {
+        return greenhouse || sprinkler;
     }
 
     @Override

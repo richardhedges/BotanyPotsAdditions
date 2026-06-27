@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import gg.sheepish.botanypotsadditions.BotanyPotsAdditions;
+import gg.sheepish.botanypotsadditions.block.ModPotBlockEntity;
 import gg.sheepish.botanypotsadditions.menu.SprinklerPotMenu;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
@@ -14,10 +15,10 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 
 public class SprinklerPotScreen extends AbstractContainerScreen<SprinklerPotMenu> {
-    private static final int BAR_WIDTH = 6;
+    private static final int BAR_WIDTH = 4;
     private static final int BAR_HEIGHT = 52;
-    private static final int ENERGY_BAR_X = 154;
-    private static final int WATER_BAR_X = 163;
+    private static final int ENERGY_BAR_X = 160;
+    private static final int WATER_BAR_X = 166;
     private static final int BAR_Y = 17;
 
     private final ResourceLocation backgroundTexture;
@@ -31,7 +32,7 @@ public class SprinklerPotScreen extends AbstractContainerScreen<SprinklerPotMenu
     @Override
     protected void renderBg(GuiGraphics guiGraphics, float partialTick, int mouseX, int mouseY) {
         guiGraphics.blit(backgroundTexture, leftPos, topPos, 0, 0, imageWidth, imageHeight);
-        renderResourceBar(guiGraphics, ENERGY_BAR_X, BAR_Y, menu.energyStored(), menu.maxEnergyStored(), 0xFF2F80ED, 0xFF1D2B3A);
+        renderResourceBar(guiGraphics, ENERGY_BAR_X, BAR_Y, menu.energyStored(), menu.maxEnergyStored(), 0xFFE53935, 0xFF3A1D1D);
         renderResourceBar(guiGraphics, WATER_BAR_X, BAR_Y, menu.waterStored(), menu.maxWaterStored(), 0xFF2DCEEF, 0xFF173746);
     }
 
@@ -53,7 +54,15 @@ public class SprinklerPotScreen extends AbstractContainerScreen<SprinklerPotMenu
         List<Component> tooltip = new ArrayList<>(super.getTooltipFromContainerItem(stack));
         int requiredGrowthTicks = menu.getRequiredGrowthTicks(hoveredSlot);
 
-        if (requiredGrowthTicks > 0) {
+        if (requiredGrowthTicks == SprinklerPotMenu.GROWTH_PAUSED) {
+            if (menu.waterStored() < ModPotBlockEntity.WATER_PER_GROWTH_TICK) {
+                tooltip.add(Component.literal("Insufficient water").withStyle(ChatFormatting.AQUA));
+            }
+
+            if (menu.energyStored() < ModPotBlockEntity.MIN_ENERGY_TO_GROW) {
+                tooltip.add(Component.literal("Not enough power").withStyle(ChatFormatting.RED));
+            }
+        } else if (requiredGrowthTicks > 0) {
             tooltip.add(Component.literal("Growth Time: " + formatGrowthTime(requiredGrowthTicks)).withStyle(ChatFormatting.GRAY));
         }
 
@@ -73,7 +82,7 @@ public class SprinklerPotScreen extends AbstractContainerScreen<SprinklerPotMenu
 
     private void renderResourceTooltip(GuiGraphics guiGraphics, int mouseX, int mouseY) {
         if (isHovering(ENERGY_BAR_X, BAR_Y, BAR_WIDTH, BAR_HEIGHT, mouseX, mouseY)) {
-            guiGraphics.renderTooltip(font, Component.literal(menu.energyStored() + " / " + menu.maxEnergyStored() + " FE").withStyle(ChatFormatting.BLUE), mouseX, mouseY);
+            guiGraphics.renderTooltip(font, Component.literal(menu.energyStored() + " / " + menu.maxEnergyStored() + " FE").withStyle(ChatFormatting.RED), mouseX, mouseY);
         } else if (isHovering(WATER_BAR_X, BAR_Y, BAR_WIDTH, BAR_HEIGHT, mouseX, mouseY)) {
             guiGraphics.renderTooltip(font, Component.literal(menu.waterStored() + " / " + menu.maxWaterStored() + " mB Water").withStyle(ChatFormatting.AQUA), mouseX, mouseY);
         }

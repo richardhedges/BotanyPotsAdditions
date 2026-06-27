@@ -1,6 +1,7 @@
 package gg.sheepish.botanypotsadditions.block;
 
 import net.darkhax.botanypots.common.impl.Helpers;
+import gg.sheepish.botanypotsadditions.registry.ModParticleTypes;
 import gg.sheepish.botanypotsadditions.registry.ModBlockEntityTypes;
 import net.darkhax.botanypots.common.api.data.recipes.crop.Crop;
 import net.darkhax.botanypots.common.api.data.recipes.soil.Soil;
@@ -12,6 +13,7 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
@@ -25,8 +27,12 @@ public class ModPotBlockEntity extends BotanyPotBlockEntity {
     public static final int BASE_SEED_SLOT = 1;
     public static final int ENERGY_CAPACITY = 10_000;
     public static final int WATER_CAPACITY = 4_000;
-    public static final int ENERGY_PER_GROWTH_TICK = 5;
+    public static final int MIN_ENERGY_TO_GROW = 100;
+    public static final int ENERGY_PER_GROWTH_TICK = 10;
     public static final int WATER_PER_GROWTH_TICK = 1;
+    private static final int MIN_SPRINKLER_GROWTH_TICKS = 2;
+    private static final int MAX_SPRINKLER_GROWTH_TICKS = 5;
+    private static final int SPRINKLER_PARTICLES_PER_TICK = 8;
     private static final int VANILLA_SLOT_COUNT = 15;
     private static final int FIRST_OUTPUT_SLOT = 3;
     private static final int LAST_OUTPUT_SLOT = 14;
@@ -95,6 +101,24 @@ public class ModPotBlockEntity extends BotanyPotBlockEntity {
         return waterTank.getCapacity();
     }
 
+    public boolean hasSprinklerGrowthResources() {
+        return canSpendSprinklerResources();
+    }
+
+    public static int getSprinklerGrowthTicks(int energyStored, int waterStored) {
+        if (energyStored < MIN_ENERGY_TO_GROW || waterStored < WATER_PER_GROWTH_TICK) {
+            return 0;
+        }
+
+        int energyScaledTicks = MIN_SPRINKLER_GROWTH_TICKS
+                + energyStored * (MAX_SPRINKLER_GROWTH_TICKS - MIN_SPRINKLER_GROWTH_TICKS) / ENERGY_CAPACITY;
+        int resourceLimitedTicks = Math.min(
+                energyStored / ENERGY_PER_GROWTH_TICK,
+                waterStored / WATER_PER_GROWTH_TICK);
+
+        return Math.min(Math.min(energyScaledTicks, MAX_SPRINKLER_GROWTH_TICKS), resourceLimitedTicks);
+    }
+
     public int seedSlotForCell(int cell) {
         if (cell <= 0) {
             return BASE_SEED_SLOT;
@@ -158,18 +182,35 @@ public class ModPotBlockEntity extends BotanyPotBlockEntity {
     }
 
     public static void tickModPot(Level level, BlockPos pos, BlockState state, ModPotBlockEntity pot) {
+        if (level.isClientSide && pot.sprinkler && pot.hasSprinklerGrowthResources()) {
+            spawnSprinklerParticles(level, pos);
+        }
+
         float growthBefore = pot.growthTime.getTicks();
-        boolean canGrow = pot.canSpendSprinklerResources();
+        boolean harvestedBaseSeed = false;
 
-        if (!pot.sprinkler || canGrow) {
+        if (!pot.sprinkler) {
             BotanyPotBlockEntity.tickPot(level, pos, state, pot);
+        } else {
+            int growthTicks = pot.getSprinklerGrowthTicks();
+
+            for (int tick = 0; tick < growthTicks && pot.canSpendSprinklerResources(); tick++) {
+                float tickGrowthBefore = pot.growthTime.getTicks();
+                BotanyPotBlockEntity.tickPot(level, pos, state, pot);
+                float tickGrowthAfter = pot.growthTime.getTicks();
+
+                if (tickGrowthAfter > tickGrowthBefore) {
+                    if (!level.isClientSide) {
+                        pot.spendSprinklerResources();
+                    }
+                } else {
+                    harvestedBaseSeed = tickGrowthBefore > tickGrowthAfter;
+                    break;
+                }
+            }
         }
 
-        if (!level.isClientSide && pot.sprinkler && growthBefore < pot.growthTime.getTicks()) {
-            pot.spendSprinklerResources();
-        }
-
-        if (!level.isClientSide && pot.isHopper() && growthBefore > pot.growthTime.getTicks()) {
+        if (!level.isClientSide && pot.isHopper() && (harvestedBaseSeed || growthBefore > pot.growthTime.getTicks())) {
             pot.harvestExtraCells(level);
             pot.markUpdated();
         } else if (!level.isClientSide && pot.isHopper() && pot.getSeedItem(0).isEmpty()) {
@@ -180,17 +221,22 @@ public class ModPotBlockEntity extends BotanyPotBlockEntity {
     private void tickExtraCellsWithoutBaseSeed(Level level) {
         int requiredGrowthTicks = getRequiredExtraCellGrowthTicks(level);
 
-        if (requiredGrowthTicks <= 0 || !canSpendSprinklerResources()) {
+        int growthTicks = getSprinklerGrowthTicks();
+
+        if (requiredGrowthTicks <= 0 || growthTicks <= 0) {
             return;
         }
 
-        growthTime.tickUp(level);
-        spendSprinklerResources();
+        for (int tick = 0; tick < growthTicks && canSpendSprinklerResources(); tick++) {
+            growthTime.tickUp(level);
+            spendSprinklerResources();
 
-        if (growthTime.getTicks() >= requiredGrowthTicks) {
-            harvestExtraCells(level);
-            growthTime.reset();
-            markUpdated();
+            if (growthTime.getTicks() >= requiredGrowthTicks) {
+                harvestExtraCells(level);
+                growthTime.reset();
+                markUpdated();
+                break;
+            }
         }
     }
 
@@ -213,6 +259,30 @@ public class ModPotBlockEntity extends BotanyPotBlockEntity {
         return requiredGrowthTicks;
     }
 
+    private static void spawnSprinklerParticles(Level level, BlockPos pos) {
+        RandomSource random = level.getRandom();
+
+        for (int particle = 0; particle < SPRINKLER_PARTICLES_PER_TICK; particle++) {
+            double angle = random.nextDouble() * Math.PI * 2D;
+            double targetRadius = Math.sqrt(random.nextDouble());
+            double targetX = Math.cos(angle) * targetRadius * 0.15D;
+            double targetZ = Math.sin(angle) * targetRadius * 0.15D;
+            double travelTicks = 20D + random.nextDouble() * 5D;
+            double xSpeed = targetX / travelTicks;
+            double zSpeed = targetZ / travelTicks;
+            double ySpeed = -0.028D - random.nextDouble() * 0.006D;
+
+            level.addParticle(
+                    ModParticleTypes.SPRINKLER_WATER.get(),
+                    pos.getX() + 0.5D + (random.nextDouble() - 0.5D) * 0.004D,
+                    pos.getY() + 0.94D,
+                    pos.getZ() + 0.5D + (random.nextDouble() - 0.5D) * 0.004D,
+                    xSpeed,
+                    ySpeed,
+                    zSpeed);
+        }
+    }
+
     private void harvestExtraCells(Level level) {
         Soil soil = getOrInvalidateSoil();
 
@@ -224,12 +294,22 @@ public class ModPotBlockEntity extends BotanyPotBlockEntity {
                 continue;
             }
 
-            int rolls = Helpers.getLootRolls(context, level, crop, soil);
+            int rolls = getLootRolls(context, level, crop, soil);
 
             for (int roll = 0; roll < rolls; roll++) {
                 crop.onHarvest(context, level, this::addHarvestOutput);
             }
         }
+    }
+
+    private int getLootRolls(CellBotanyPotContext context, Level level, Crop crop, Soil soil) {
+        int rolls = Helpers.getLootRolls(context, level, crop, soil);
+
+        if (getBlockState().getBlock() instanceof ModPotBlock block && block.hasOutputBonus()) {
+            rolls += Helpers.determineRollCount(rolls * ModPotBlock.OUTPUT_YIELD_MODIFIER, level.getRandom());
+        }
+
+        return rolls;
     }
 
     private void addHarvestOutput(ItemStack harvestedStack) {
@@ -267,7 +347,11 @@ public class ModPotBlockEntity extends BotanyPotBlockEntity {
     }
 
     private boolean canSpendSprinklerResources() {
-        return !sprinkler || (energyStorage.getEnergyStored() >= ENERGY_PER_GROWTH_TICK && waterTank.getFluidAmount() >= WATER_PER_GROWTH_TICK);
+        return !sprinkler || (energyStorage.getEnergyStored() >= MIN_ENERGY_TO_GROW && waterTank.getFluidAmount() >= WATER_PER_GROWTH_TICK);
+    }
+
+    private int getSprinklerGrowthTicks() {
+        return getSprinklerGrowthTicks(energyStorage.getEnergyStored(), waterTank.getFluidAmount());
     }
 
     private void spendSprinklerResources() {

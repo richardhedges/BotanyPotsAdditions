@@ -7,6 +7,7 @@ import gg.sheepish.botanypotsadditions.registry.ModBlockEntityTypes;
 import gg.sheepish.botanypotsadditions.registry.ModBlocks;
 import gg.sheepish.botanypotsadditions.registry.ModCreativeTabs;
 import gg.sheepish.botanypotsadditions.registry.ModMenuTypes;
+import gg.sheepish.botanypotsadditions.registry.ModParticleTypes;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 
@@ -19,6 +20,7 @@ public class BotanyPotsAdditions {
         ModBlocks.register(modEventBus);
         ModBlockEntityTypes.register(modEventBus);
         ModMenuTypes.register(modEventBus);
+        ModParticleTypes.register(modEventBus);
         ModCreativeTabs.register(modEventBus);
 
         LOGGER.info("BotanyPotsAdditions initialized");
