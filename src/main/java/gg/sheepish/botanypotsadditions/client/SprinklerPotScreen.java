@@ -20,6 +20,9 @@ public class SprinklerPotScreen extends AbstractContainerScreen<SprinklerPotMenu
     private static final int ENERGY_BAR_X = 160;
     private static final int WATER_BAR_X = 166;
     private static final int BAR_Y = 17;
+    private static final ResourceLocation EMPTY_SLOT_SEED = ResourceLocation.fromNamespaceAndPath("botanypots", "textures/item/empty_slot_seed.png");
+    private static final ResourceLocation EMPTY_SLOT_SOIL = ResourceLocation.fromNamespaceAndPath("botanypots", "textures/item/empty_slot_soil.png");
+    private static final ResourceLocation EMPTY_SLOT_HOE = ResourceLocation.withDefaultNamespace("textures/item/empty_slot_hoe.png");
 
     private final ResourceLocation backgroundTexture;
 
@@ -32,6 +35,7 @@ public class SprinklerPotScreen extends AbstractContainerScreen<SprinklerPotMenu
     @Override
     protected void renderBg(GuiGraphics guiGraphics, float partialTick, int mouseX, int mouseY) {
         guiGraphics.blit(backgroundTexture, leftPos, topPos, 0, 0, imageWidth, imageHeight);
+        renderSinglePotSlotPlaceholders(guiGraphics);
         renderResourceBar(guiGraphics, ENERGY_BAR_X, BAR_Y, menu.energyStored(), menu.maxEnergyStored(), 0xFFE53935, 0xFF3A1D1D);
         renderResourceBar(guiGraphics, WATER_BAR_X, BAR_Y, menu.waterStored(), menu.maxWaterStored(), 0xFF2DCEEF, 0xFF173746);
     }
@@ -85,6 +89,19 @@ public class SprinklerPotScreen extends AbstractContainerScreen<SprinklerPotMenu
             guiGraphics.renderTooltip(font, Component.literal(menu.energyStored() + " / " + menu.maxEnergyStored() + " FE").withStyle(ChatFormatting.RED), mouseX, mouseY);
         } else if (isHovering(WATER_BAR_X, BAR_Y, BAR_WIDTH, BAR_HEIGHT, mouseX, mouseY)) {
             guiGraphics.renderTooltip(font, Component.literal(menu.waterStored() + " / " + menu.maxWaterStored() + " mB Water").withStyle(ChatFormatting.AQUA), mouseX, mouseY);
+        }
+    }
+
+    private void renderSinglePotSlotPlaceholders(GuiGraphics guiGraphics) {
+        if (menu.cellCount() != 1) {
+            return;
+        }
+
+        guiGraphics.blit(EMPTY_SLOT_SEED, leftPos + menu.seedX(0), topPos + menu.seedY(0), 0, 0, 16, 16, 16, 16);
+        guiGraphics.blit(EMPTY_SLOT_SOIL, leftPos + menu.soilX(), topPos + menu.soilY(), 0, 0, 16, 16, 16, 16);
+
+        if (menu.isHopper()) {
+            guiGraphics.blit(EMPTY_SLOT_HOE, leftPos + menu.toolX(), topPos + menu.toolY(), 0, 0, 16, 16, 16, 16);
         }
     }
 

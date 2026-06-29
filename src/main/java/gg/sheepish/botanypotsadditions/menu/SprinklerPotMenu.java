@@ -27,10 +27,15 @@ public class SprinklerPotMenu extends AbstractContainerMenu {
     private static final int TOOL_SLOT = 2;
     private static final int STORAGE_START = 3;
     private static final int STORAGE_END_EXCLUSIVE = 15;
+    private static final int SINGLE_HOPPER_OUTPUT_X = 80;
+    private static final int SINGLE_HOPPER_INPUT_X = 44;
+    private static final int SINGLE_HOPPER_TOOL_X = 18;
+    private static final int SINGLE_HOPPER_TOOL_Y = 35;
     private static final int HOPPER_OUTPUT_X = 86;
     private static final int BASIC_INPUT_X = 80;
     private static final int HOPPER_INPUT_X = 35;
     private static final int HOPPER_TOOL_X = 9;
+    private static final int HOPPER_TOOL_Y = 48;
 
     private final Level level;
     private final Inventory playerInventory;
@@ -75,12 +80,12 @@ public class SprinklerPotMenu extends AbstractContainerMenu {
         }
 
         if (hopper) {
-            addSlot(new ValidatingSlot(potContainer, TOOL_SLOT, HOPPER_TOOL_X, 48, stack -> stack.is(BotanyPotMenu.HARVEST_ITEM)));
+            addSlot(new ValidatingSlot(potContainer, TOOL_SLOT, toolX(), toolY(), stack -> stack.is(BotanyPotMenu.HARVEST_ITEM)));
 
             for (int row = 0; row < 3; row++) {
                 for (int column = 0; column < 4; column++) {
                     int slot = STORAGE_START + column + row * 4;
-                    addSlot(new OutputOnlySlot(potContainer, slot, HOPPER_OUTPUT_X + column * 18, 17 + row * 18));
+                    addSlot(new OutputOnlySlot(potContainer, slot, outputX() + column * 18, 17 + row * 18));
                 }
             }
         }
@@ -184,7 +189,7 @@ public class SprinklerPotMenu extends AbstractContainerMenu {
     public int seedX(int cell) {
         if (hopper) {
             if (cellCount == 1) {
-                return 27;
+                return SINGLE_HOPPER_INPUT_X;
             }
 
             return cellCount == 2
@@ -205,6 +210,22 @@ public class SprinklerPotMenu extends AbstractContainerMenu {
         return 22;
     }
 
+    public int soilX() {
+        return inputX();
+    }
+
+    public int soilY() {
+        return 48;
+    }
+
+    public int toolX() {
+        return cellCount == 1 ? SINGLE_HOPPER_TOOL_X : HOPPER_TOOL_X;
+    }
+
+    public int toolY() {
+        return cellCount == 1 ? SINGLE_HOPPER_TOOL_Y : HOPPER_TOOL_Y;
+    }
+
     public int getRequiredGrowthTicks(Slot slot) {
         int cell = seedCellForSlot(slot);
         CellBotanyPotContext context = cell >= 0 ? contextForCell(cell, slot.getItem()) : null;
@@ -219,7 +240,15 @@ public class SprinklerPotMenu extends AbstractContainerMenu {
     }
 
     private int inputX() {
+        if (hopper && cellCount == 1) {
+            return SINGLE_HOPPER_INPUT_X;
+        }
+
         return hopper ? HOPPER_INPUT_X : BASIC_INPUT_X;
+    }
+
+    private int outputX() {
+        return cellCount == 1 ? SINGLE_HOPPER_OUTPUT_X : HOPPER_OUTPUT_X;
     }
 
     private int seedSlotForCell(int cell) {
