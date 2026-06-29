@@ -12,6 +12,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.event.BlockEntityTypeAddBlocksEvent;
+import net.neoforged.neoforge.items.wrapper.SidedInvWrapper;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
@@ -61,5 +62,9 @@ public final class ModBlockEntityTypes {
                 Capabilities.FluidHandler.BLOCK,
                 CELLED_POT.get(),
                 (pot, side) -> pot.isSprinkler() ? pot.waterTank(side) : null);
+        event.registerBlockEntity(
+                Capabilities.ItemHandler.BLOCK,
+                CELLED_POT.get(),
+                (pot, side) -> pot.isHopper() ? new SidedInvWrapper(pot, side) : null);
     }
 }
