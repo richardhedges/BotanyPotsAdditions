@@ -20,6 +20,7 @@ public final class ModDataGenerators {
         if (event.includeServer()) {
             event.addProvider(new ModTagProvider(event.getGenerator().getPackOutput()));
             event.addProvider(new ModRecipeProvider(event.getGenerator().getPackOutput()));
+            event.addProvider(new ModLootProvider(event.getGenerator().getPackOutput()));
         }
     }
 }

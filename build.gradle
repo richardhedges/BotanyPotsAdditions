@@ -38,6 +38,13 @@ repositories {
         url = 'https://api.modrinth.com/maven'
     }
     maven {
+        name = 'CurseMaven'
+        url = 'https://cursemaven.com'
+        content {
+            includeGroup 'curse.maven'
+        }
+    }
+    maven {
         name = "Jared's Maven"
         url = 'https://maven.blamejared.com/'
     }
@@ -145,6 +152,11 @@ dependencies {
     localRuntime "maven.modrinth:SaWFztxY:${botany_pots_mystical_agriculture_compat_version}"
     localRuntime "maven.modrinth:Ce6I4WUE:${mekanism_version}"
     localRuntime "maven.modrinth:pipez:${pipez_version}"
+    localRuntime "maven.modrinth:architectury-api:${architectury_version}"
+    localRuntime "curse.maven:ftb-library-404465:${ftb_library_version}"
+    localRuntime "curse.maven:ftb-ultimine-386134:${ftb_ultimine_version}"
+    localRuntime "curse.maven:geckolib-388172:${geckolib_version}"
+    localRuntime "curse.maven:allthemodium-364466:${allthemodium_version}"
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.
