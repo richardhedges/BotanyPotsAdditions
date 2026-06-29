@@ -14,6 +14,10 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 
 public class CelledPotScreen extends AbstractContainerScreen<CelledPotMenu> {
+    private static final ResourceLocation EMPTY_SLOT_SEED = ResourceLocation.fromNamespaceAndPath("botanypots", "textures/item/empty_slot_seed.png");
+    private static final ResourceLocation EMPTY_SLOT_SOIL = ResourceLocation.fromNamespaceAndPath("botanypots", "textures/item/empty_slot_soil.png");
+    private static final ResourceLocation EMPTY_SLOT_HOE = ResourceLocation.withDefaultNamespace("textures/item/empty_slot_hoe.png");
+
     private final ResourceLocation backgroundTexture;
 
     public CelledPotScreen(CelledPotMenu menu, Inventory playerInventory, Component title) {
@@ -25,6 +29,7 @@ public class CelledPotScreen extends AbstractContainerScreen<CelledPotMenu> {
     @Override
     protected void renderBg(GuiGraphics guiGraphics, float partialTick, int mouseX, int mouseY) {
         guiGraphics.blit(backgroundTexture, leftPos, topPos, 0, 0, imageWidth, imageHeight);
+        renderSlotPlaceholders(guiGraphics);
     }
 
     @Override
@@ -55,6 +60,22 @@ public class CelledPotScreen extends AbstractContainerScreen<CelledPotMenu> {
         String cells = menu.cellCount() == 2 ? "double" : "quadruple";
         String form = menu.isHopper() ? "_hopper_botany_pot_gui.png" : "_botany_pot_gui.png";
         return cells + form;
+    }
+
+    private void renderSlotPlaceholders(GuiGraphics guiGraphics) {
+        for (int cell = 0; cell < menu.cellCount(); cell++) {
+            if (menu.isSeedSlotEmpty(cell)) {
+                guiGraphics.blit(EMPTY_SLOT_SEED, leftPos + menu.seedX(cell), topPos + menu.seedY(cell), 0, 0, 16, 16, 16, 16);
+            }
+        }
+
+        if (menu.isSoilSlotEmpty()) {
+            guiGraphics.blit(EMPTY_SLOT_SOIL, leftPos + menu.soilX(), topPos + menu.soilY(), 0, 0, 16, 16, 16, 16);
+        }
+
+        if (menu.isHopper() && menu.isToolSlotEmpty()) {
+            guiGraphics.blit(EMPTY_SLOT_HOE, leftPos + menu.toolX(), topPos + menu.toolY(), 0, 0, 16, 16, 16, 16);
+        }
     }
 
     private static String formatGrowthTime(int ticks) {

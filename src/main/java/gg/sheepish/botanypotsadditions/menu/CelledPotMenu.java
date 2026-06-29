@@ -169,6 +169,34 @@ public class CelledPotMenu extends AbstractContainerMenu {
         return 22;
     }
 
+    public int soilX() {
+        return inputX();
+    }
+
+    public int soilY() {
+        return 48;
+    }
+
+    public int toolX() {
+        return HOPPER_TOOL_X;
+    }
+
+    public int toolY() {
+        return 48;
+    }
+
+    public boolean isSoilSlotEmpty() {
+        return potContainer.getItem(0).isEmpty();
+    }
+
+    public boolean isSeedSlotEmpty(int cell) {
+        return potContainer.getItem(seedSlotForCell(cell)).isEmpty();
+    }
+
+    public boolean isToolSlotEmpty() {
+        return !hopper || potContainer.getItem(TOOL_SLOT).isEmpty();
+    }
+
     public int getRequiredGrowthTicks(Slot slot) {
         int cell = seedCellForSlot(slot);
         CellBotanyPotContext context = cell >= 0 ? contextForCell(cell, slot.getItem()) : null;

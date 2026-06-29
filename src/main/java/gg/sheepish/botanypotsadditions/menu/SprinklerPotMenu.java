@@ -226,6 +226,18 @@ public class SprinklerPotMenu extends AbstractContainerMenu {
         return cellCount == 1 ? SINGLE_HOPPER_TOOL_Y : HOPPER_TOOL_Y;
     }
 
+    public boolean isSoilSlotEmpty() {
+        return potContainer.getItem(0).isEmpty();
+    }
+
+    public boolean isSeedSlotEmpty(int cell) {
+        return potContainer.getItem(seedSlotForCell(cell)).isEmpty();
+    }
+
+    public boolean isToolSlotEmpty() {
+        return !hopper || potContainer.getItem(TOOL_SLOT).isEmpty();
+    }
+
     public int getRequiredGrowthTicks(Slot slot) {
         int cell = seedCellForSlot(slot);
         CellBotanyPotContext context = cell >= 0 ? contextForCell(cell, slot.getItem()) : null;
