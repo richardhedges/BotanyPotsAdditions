@@ -80,9 +80,18 @@ public class CellBotanyPotContext implements BotanyPotContext {
         Level level = pot.getLevel();
         Crop crop = getCrop();
 
-        return level != null && crop != null
-                ? net.darkhax.botanypots.common.impl.Helpers.getRequiredGrowthTicks(this, level, crop, getSoil())
-                : -1;
+        if (level == null || crop == null) {
+            return -1;
+        }
+        // Match Helpers, including the block modifier omitted for custom contexts.
+        Soil soil = getSoil();
+        float modifier = net.darkhax.botanypots.common.impl.BotanyPotsMod.CONFIG.get().gameplay.global_growth_modifier;
+        modifier += soil != null ? soil.getGrowthModifier(this, level) : 0F;
+        modifier += net.darkhax.botanypots.common.impl.Helpers.efficiencyModifier(level.registryAccess(), getHarvestItem());
+        if (pot.getBlockState().getBlock() instanceof ModPotBlock block) {
+            modifier += block.getGrowthModifier(this, level, crop, soil);
+        }
+        return net.minecraft.util.Mth.floor(crop.getRequiredGrowthTicks(this, level) / modifier);
     }
 
     @Override

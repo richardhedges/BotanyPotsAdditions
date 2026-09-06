@@ -1,5 +1,6 @@
 package gg.sheepish.botanypotsadditions.menu;
 
+import gg.sheepish.botanypotsadditions.config.ModConfig;
 import java.util.function.IntSupplier;
 import java.util.function.Predicate;
 
@@ -106,10 +107,10 @@ public class SprinklerPotMenu extends AbstractContainerMenu {
     }
 
     private void addResourceDataSlots() {
-        addDataSlot(resourceDataSlot(() -> sprinklerPot() != null ? sprinklerPot().getEnergyStored() : 0, value -> energyStored = value));
-        addDataSlot(resourceDataSlot(() -> sprinklerPot() != null ? sprinklerPot().getMaxEnergyStored() : ModPotBlockEntity.ENERGY_CAPACITY, value -> maxEnergyStored = value));
-        addDataSlot(resourceDataSlot(() -> sprinklerPot() != null ? sprinklerPot().getWaterStored() : 0, value -> waterStored = value));
-        addDataSlot(resourceDataSlot(() -> sprinklerPot() != null ? sprinklerPot().getMaxWaterStored() : ModPotBlockEntity.WATER_CAPACITY, value -> maxWaterStored = value));
+        addResourceData(() -> sprinklerPot() != null ? sprinklerPot().getEnergyStored() : 0, () -> energyStored, value -> energyStored = value);
+        addResourceData(() -> sprinklerPot() != null ? sprinklerPot().getMaxEnergyStored() : ModConfig.ENERGY_CAPACITY.get(), () -> maxEnergyStored, value -> maxEnergyStored = value);
+        addResourceData(() -> sprinklerPot() != null ? sprinklerPot().getWaterStored() : 0, () -> waterStored, value -> waterStored = value);
+        addResourceData(() -> sprinklerPot() != null ? sprinklerPot().getMaxWaterStored() : ModConfig.WATER_CAPACITY.get(), () -> maxWaterStored, value -> maxWaterStored = value);
     }
 
     @Override
@@ -248,7 +249,7 @@ public class SprinklerPotMenu extends AbstractContainerMenu {
         }
 
         int sprinklerGrowthTicks = ModPotBlockEntity.getSprinklerGrowthTicks(energyStored, waterStored);
-        return sprinklerGrowthTicks > 0 ? Math.max(1, (requiredGrowthTicks + sprinklerGrowthTicks - 1) / sprinklerGrowthTicks) : GROWTH_PAUSED;
+        return sprinklerGrowthTicks > 0 ? (int) Math.max(1L, ((long) requiredGrowthTicks + sprinklerGrowthTicks - 1) / sprinklerGrowthTicks) : GROWTH_PAUSED;
     }
 
     private int inputX() {
@@ -294,6 +295,13 @@ public class SprinklerPotMenu extends AbstractContainerMenu {
 
     private ModPotBlockEntity sprinklerPot() {
         return level.getBlockEntity(pos) instanceof ModPotBlockEntity pot ? pot : null;
+    }
+
+    private void addResourceData(IntSupplier serverGetter, IntSupplier clientGetter, java.util.function.IntConsumer setter) {
+        addDataSlot(resourceDataSlot(() -> serverGetter.getAsInt() & 0xffff,
+                value -> setter.accept((clientGetter.getAsInt() & 0xffff0000) | (value & 0xffff))));
+        addDataSlot(resourceDataSlot(() -> serverGetter.getAsInt() >>> 16,
+                value -> setter.accept((clientGetter.getAsInt() & 0xffff) | ((value & 0xffff) << 16))));
     }
 
     private static DataSlot resourceDataSlot(IntSupplier getter, java.util.function.IntConsumer setter) {

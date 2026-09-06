@@ -64,15 +64,3 @@ Settings apply across materials and pot forms. Cell count, recipes, slots and co
 - Botany Pots **1.21.1-21.1.42 or newer**, plus its required dependencies
 
 Optional Mystical Agriculture integration adds a Botany Pots recipe for Sculk Seeds when the relevant content is present. Mystical Agriculture is not required for the core mod.
-
-## Development
-
-Build and run regression tests with Java 21:
-
-```sh
-./gradlew build
-```
-
-Launch the development client with `./gradlew runClient`.
-
-Developed by **BackSheep**. See [1.0.1 release notes](docs/releases/1.0.1.md).

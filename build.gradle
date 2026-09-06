@@ -135,6 +135,7 @@ configurations {
 }
 
 dependencies {
+    testImplementation 'junit:junit:4.13.2'
     compileOnly "maven.modrinth:botany-pots:${botany_pots_version}"
     localRuntime "maven.modrinth:botany-pots:${botany_pots_version}"
     compileOnly "maven.modrinth:bookshelf-lib:${bookshelf_version}"
@@ -200,6 +201,7 @@ publishing {
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
 }
+
 
 // The generated NeoForge run task can produce a Gradle problems report on every run.
 // Gradle 9.2.1 sometimes fails if the previous report is still present, so clear it

@@ -1,6 +1,7 @@
 package gg.sheepish.botanypotsadditions.block;
 
 import net.darkhax.botanypots.common.impl.Helpers;
+import gg.sheepish.botanypotsadditions.config.ModConfig;
 import gg.sheepish.botanypotsadditions.registry.ModParticleTypes;
 import gg.sheepish.botanypotsadditions.registry.ModBlockEntityTypes;
 import net.darkhax.botanypots.common.api.data.recipes.crop.Crop;
@@ -25,13 +26,6 @@ import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
 
 public class ModPotBlockEntity extends BotanyPotBlockEntity {
     public static final int BASE_SEED_SLOT = 1;
-    public static final int ENERGY_CAPACITY = 10_000;
-    public static final int WATER_CAPACITY = 4_000;
-    public static final int MIN_ENERGY_TO_GROW = 100;
-    public static final int ENERGY_PER_GROWTH_TICK = 10;
-    public static final int WATER_PER_GROWTH_TICK = 1;
-    private static final int MIN_SPRINKLER_GROWTH_TICKS = 2;
-    private static final int MAX_SPRINKLER_GROWTH_TICKS = 5;
     private static final int SPRINKLER_PARTICLES_PER_TICK = 8;
     private static final int VANILLA_SLOT_COUNT = 15;
     private static final int FIRST_OUTPUT_SLOT = 3;
@@ -56,8 +50,8 @@ public class ModPotBlockEntity extends BotanyPotBlockEntity {
         this.cellCount = Math.max(1, cellCount);
         this.containerSize = VANILLA_SLOT_COUNT + Math.max(0, this.cellCount - 1);
         this.sprinkler = sprinkler;
-        this.energyStorage = new SprinklerEnergyStorage(ENERGY_CAPACITY, 1_000);
-        this.waterTank = new SprinklerFluidTank(WATER_CAPACITY);
+        this.energyStorage = new SprinklerEnergyStorage(ModConfig.ENERGY_CAPACITY.get(), ModConfig.ENERGY_INPUT.get());
+        this.waterTank = new SprinklerFluidTank(ModConfig.WATER_CAPACITY.get());
 
         if (this.containerSize > VANILLA_SLOT_COUNT) {
             setItems(NonNullList.withSize(this.containerSize, ItemStack.EMPTY));
@@ -106,17 +100,9 @@ public class ModPotBlockEntity extends BotanyPotBlockEntity {
     }
 
     public static int getSprinklerGrowthTicks(int energyStored, int waterStored) {
-        if (energyStored < MIN_ENERGY_TO_GROW || waterStored < WATER_PER_GROWTH_TICK) {
-            return 0;
-        }
-
-        int energyScaledTicks = MIN_SPRINKLER_GROWTH_TICKS
-                + energyStored * (MAX_SPRINKLER_GROWTH_TICKS - MIN_SPRINKLER_GROWTH_TICKS) / ENERGY_CAPACITY;
-        int resourceLimitedTicks = Math.min(
-                energyStored / ENERGY_PER_GROWTH_TICK,
-                waterStored / WATER_PER_GROWTH_TICK);
-
-        return Math.min(Math.min(energyScaledTicks, MAX_SPRINKLER_GROWTH_TICKS), resourceLimitedTicks);
+        return SprinklerGrowth.operations(energyStored, waterStored, ModConfig.ENERGY_CAPACITY.get(),
+                ModConfig.energyRequired(), ModConfig.ENERGY_PER_OPERATION.get(), ModConfig.WATER_PER_OPERATION.get(),
+                ModConfig.MIN_GROWTH.get(), ModConfig.MAX_GROWTH.get());
     }
 
     public int seedSlotForCell(int cell) {
@@ -174,10 +160,14 @@ public class ModPotBlockEntity extends BotanyPotBlockEntity {
 
         if (tag.contains("SprinklerEnergy", Tag.TAG_INT)) {
             energyStorage.deserializeNBT(registries, tag.get("SprinklerEnergy"));
+            energyStorage.clampStored();
         }
 
         if (tag.contains("SprinklerWater", Tag.TAG_COMPOUND)) {
             waterTank.readFromNBT(registries, tag.getCompound("SprinklerWater"));
+            if (waterTank.getFluidAmount() > waterTank.getCapacity()) {
+                waterTank.getFluid().setAmount(waterTank.getCapacity());
+            }
         }
     }
 
@@ -284,6 +274,10 @@ public class ModPotBlockEntity extends BotanyPotBlockEntity {
     }
 
     private void harvestExtraCells(Level level) {
+        harvestExtraCells(level, this::addHarvestOutput);
+    }
+
+    public void harvestExtraCells(Level level, java.util.function.Consumer<ItemStack> output) {
         Soil soil = getOrInvalidateSoil();
 
         for (int cell = 1; cell < cellCount; cell++) {
@@ -297,19 +291,18 @@ public class ModPotBlockEntity extends BotanyPotBlockEntity {
             int rolls = getLootRolls(context, level, crop, soil);
 
             for (int roll = 0; roll < rolls; roll++) {
-                crop.onHarvest(context, level, this::addHarvestOutput);
+                crop.onHarvest(context, level, output);
             }
         }
     }
 
     private int getLootRolls(CellBotanyPotContext context, Level level, Crop crop, Soil soil) {
-        int rolls = Helpers.getLootRolls(context, level, crop, soil);
-
-        if (getBlockState().getBlock() instanceof ModPotBlock block && block.hasOutputBonus()) {
-            rolls += Helpers.determineRollCount(rolls * ModPotBlock.OUTPUT_YIELD_MODIFIER, level.getRandom());
+        // Helpers only adds block modifiers for its own BlockEntityContext record.
+        float yield = Helpers.getTotalYield(context, level, crop, soil);
+        if (getBlockState().getBlock() instanceof ModPotBlock block) {
+            yield += crop.getYieldScale(context, level) * block.getYieldModifier(context, level, crop, soil);
         }
-
-        return rolls;
+        return Helpers.determineRollCount(yield, level.getRandom());
     }
 
     private void addHarvestOutput(ItemStack harvestedStack) {
@@ -347,11 +340,11 @@ public class ModPotBlockEntity extends BotanyPotBlockEntity {
     }
 
     private boolean canSpendSprinklerResources() {
-        return !sprinkler || (energyStorage.getEnergyStored() >= MIN_ENERGY_TO_GROW && waterTank.getFluidAmount() >= WATER_PER_GROWTH_TICK);
+        return !sprinkler || (energyStorage.getEnergyStored() >= ModConfig.energyRequired() && waterTank.getFluidAmount() >= ModConfig.WATER_PER_OPERATION.get());
     }
 
     private int getSprinklerGrowthTicks() {
-        return getSprinklerGrowthTicks(energyStorage.getEnergyStored(), waterTank.getFluidAmount());
+        return sprinkler ? getSprinklerGrowthTicks(energyStorage.getEnergyStored(), waterTank.getFluidAmount()) : 1;
     }
 
     private void spendSprinklerResources() {
@@ -359,8 +352,8 @@ public class ModPotBlockEntity extends BotanyPotBlockEntity {
             return;
         }
 
-        energyStorage.consumeEnergy(ENERGY_PER_GROWTH_TICK);
-        waterTank.drain(WATER_PER_GROWTH_TICK, IFluidHandler.FluidAction.EXECUTE);
+        energyStorage.consumeEnergy(ModConfig.ENERGY_PER_OPERATION.get());
+        waterTank.drain(ModConfig.WATER_PER_OPERATION.get(), IFluidHandler.FluidAction.EXECUTE);
     }
 
     private void saveSprinklerResources(CompoundTag tag, HolderLookup.Provider registries) {
@@ -413,6 +406,10 @@ public class ModPotBlockEntity extends BotanyPotBlockEntity {
             }
 
             return extracted;
+        }
+
+        void clampStored() {
+            energy = Math.clamp(energy, 0, capacity);
         }
 
         void consumeEnergy(int amount) {

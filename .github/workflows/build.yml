@@ -28,3 +28,32 @@ jobs:
 
       - name: Build with Gradle
         run: ./gradlew build
+
+      - name: Save release artifact
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-jar
+          path: build/libs/*.jar
+          if-no-files-found: error
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: release-jar
+          path: build/libs
+      - name: Publish GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          VERSION="${RELEASE_TAG#v}"
+          test -f "build/libs/botanypotsadditions-${VERSION}.jar"
+          gh release create "$RELEASE_TAG" "build/libs/botanypotsadditions-${VERSION}.jar" --verify-tag --title "BotanyPotsAdditions ${VERSION}" --notes-file "docs/releases/${VERSION}.md"

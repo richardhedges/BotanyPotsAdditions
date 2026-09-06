@@ -1,5 +1,6 @@
 package gg.sheepish.botanypotsadditions.block;
 
+import gg.sheepish.botanypotsadditions.config.ModConfig;
 import gg.sheepish.botanypotsadditions.menu.CelledPotMenu;
 import gg.sheepish.botanypotsadditions.menu.SprinklerPotMenu;
 import gg.sheepish.botanypotsadditions.registry.ModBlockEntityTypes;
@@ -30,7 +31,6 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 public class ModPotBlock extends BotanyPotBlock {
-    public static final float OUTPUT_YIELD_MODIFIER = 0.5F;
     private static final VoxelShape POT_SHAPE = Shapes.or(
             box(2.0D, 0.0D, 2.0D, 14.0D, 1.0D, 14.0D),
             box(2.0D, 1.0D, 2.0D, 3.0D, 8.0D, 14.0D),
@@ -92,12 +92,17 @@ public class ModPotBlock extends BotanyPotBlock {
 
     @Override
     public float getGrowthModifier(BotanyPotContext context, Level level, Crop crop, Soil soil) {
-        return super.getGrowthModifier(context, level, crop, soil);
+        return super.getGrowthModifier(context, level, crop, soil)
+                + (greenhouse && !sprinkler ? (float) (ModConfig.GREENHOUSE_GROWTH.get() - 1.0) : 0F);
     }
 
     @Override
     public float getYieldModifier(BotanyPotContext context, Level level, Crop crop, Soil soil) {
-        return super.getYieldModifier(context, level, crop, soil) + (hasOutputBonus() ? OUTPUT_YIELD_MODIFIER : 0F);
+        var familyYield = sprinkler ? ModConfig.SPRINKLER_YIELD.get()
+                : greenhouse ? ModConfig.GREENHOUSE_YIELD.get() : 1.0;
+        var cellYield = cellCount == 4 ? ModConfig.QUAD_YIELD.get() / 4.0
+                : cellCount == 2 ? ModConfig.DOUBLE_YIELD.get() / 2.0 : 1.0;
+        return super.getYieldModifier(context, level, crop, soil) + (float) (familyYield * cellYield - 1.0);
     }
 
     public int cellCount() {
@@ -114,6 +119,31 @@ public class ModPotBlock extends BotanyPotBlock {
 
     public boolean hasOutputBonus() {
         return greenhouse || sprinkler;
+    }
+
+    @Override
+    protected net.minecraft.world.ItemInteractionResult useItemOn(net.minecraft.world.item.ItemStack stack,
+            BlockState state, Level level, BlockPos pos, Player player, net.minecraft.world.InteractionHand hand,
+            net.minecraft.world.phys.BlockHitResult hit) {
+        if (type == PotType.BASIC && level.getBlockEntity(pos) instanceof BotanyPotBlockEntity pot && pot.canHarvest()) {
+            if (!level.isClientSide) {
+                BotanyPotContext context = pot.getRecipeContext();
+                Crop crop = pot.getOrInvalidateCrop();
+                int rolls = net.darkhax.botanypots.common.impl.Helpers.getLootRolls(context, level, crop, pot.getOrInvalidateSoil());
+                for (int roll = 0; roll < rolls; roll++) {
+                    crop.onHarvest(context, level, output -> popResource(level, pos, output));
+                }
+                if (pot instanceof ModPotBlockEntity modPot) {
+                    modPot.harvestExtraCells(level, output -> popResource(level, pos, output));
+                }
+                pot.growthTime.reset();
+                pot.markUpdated();
+                level.gameEvent(net.minecraft.world.level.gameevent.GameEvent.BLOCK_CHANGE, pos,
+                        net.minecraft.world.level.gameevent.GameEvent.Context.of(state));
+            }
+            return net.minecraft.world.ItemInteractionResult.sidedSuccess(level.isClientSide);
+        }
+        return super.useItemOn(stack, state, level, pos, player, hand, hit);
     }
 
     @Override

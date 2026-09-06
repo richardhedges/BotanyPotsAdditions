@@ -16,7 +16,9 @@ public class BotanyPotsAdditions {
     public static final String MODID = "botanypotsadditions";
     public static final Logger LOGGER = LogUtils.getLogger();
 
-    public BotanyPotsAdditions(IEventBus modEventBus) {
+    public BotanyPotsAdditions(IEventBus modEventBus, net.neoforged.fml.ModContainer container) {
+        container.registerConfig(net.neoforged.fml.config.ModConfig.Type.SERVER,
+                gg.sheepish.botanypotsadditions.config.ModConfig.SPEC);
         ModBlocks.register(modEventBus);
         ModBlockEntityTypes.register(modEventBus);
         ModMenuTypes.register(modEventBus);

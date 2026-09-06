@@ -1,5 +1,6 @@
 package gg.sheepish.botanypotsadditions.client;
 
+import gg.sheepish.botanypotsadditions.config.ModConfig;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,11 +60,11 @@ public class SprinklerPotScreen extends AbstractContainerScreen<SprinklerPotMenu
         int requiredGrowthTicks = menu.getRequiredGrowthTicks(hoveredSlot);
 
         if (requiredGrowthTicks == SprinklerPotMenu.GROWTH_PAUSED) {
-            if (menu.waterStored() < ModPotBlockEntity.WATER_PER_GROWTH_TICK) {
+            if (menu.waterStored() < ModConfig.WATER_PER_OPERATION.get()) {
                 tooltip.add(Component.literal("Insufficient water").withStyle(ChatFormatting.AQUA));
             }
 
-            if (menu.energyStored() < ModPotBlockEntity.MIN_ENERGY_TO_GROW) {
+            if (menu.energyStored() < ModConfig.energyRequired()) {
                 tooltip.add(Component.literal("Not enough power").withStyle(ChatFormatting.RED));
             }
         } else if (requiredGrowthTicks > 0) {
@@ -79,7 +80,7 @@ public class SprinklerPotScreen extends AbstractContainerScreen<SprinklerPotMenu
         guiGraphics.fill(left, top, left + BAR_WIDTH, top + BAR_HEIGHT, backgroundColor);
 
         if (capacity > 0 && stored > 0) {
-            int fillHeight = Math.max(1, stored * BAR_HEIGHT / capacity);
+            int fillHeight = (int) Math.max(1L, Math.min(BAR_HEIGHT, (long) stored * BAR_HEIGHT / capacity));
             guiGraphics.fill(left + 1, top + BAR_HEIGHT - fillHeight + 1, left + BAR_WIDTH - 1, top + BAR_HEIGHT - 1, fillColor);
         }
     }
